@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Control Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f8f8; margin: 0; padding: 0; }
+        .container { max-width: 500px; margin: 40px auto; background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        .section { margin-bottom: 24px; }
+        label { display: block; margin-bottom: 8px; }
+        button { background: #b22222; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        button:disabled { background: #ccc; }
+    </style>
+    <script>
+        function saveSettings() {
+            var items = [
+                'item-bruschetta', 'item-caesar', 'item-spring',
+                'item-salmon', 'item-steak', 'item-pasta',
+                'item-cake', 'item-cheesecake', 'item-icecream'
+            ];
+            var settings = {};
+            items.forEach(function(id) {
+                settings[id] = document.getElementById('cb-' + id).checked;
+            });
+            localStorage.setItem('menuSettings', JSON.stringify(settings));
+            alert('Menu display settings saved!');
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Menu Control Panel</h1>
+        <div class="section">
+            <strong>Select which items to display:</strong>
+            <label><input type="checkbox" id="cb-item-bruschetta" checked> Bruschetta</label>
+            <label><input type="checkbox" id="cb-item-caesar" checked> Caesar Salad</label>
+            <label><input type="checkbox" id="cb-item-spring" checked> Spring Rolls</label>
+            <label><input type="checkbox" id="cb-item-salmon" checked> Grilled Salmon</label>
+            <label><input type="checkbox" id="cb-item-steak" checked> Steak Frites</label>
+            <label><input type="checkbox" id="cb-item-pasta" checked> Vegetarian Pasta</label>
+            <label><input type="checkbox" id="cb-item-cake" checked> Chocolate Cake</label>
+            <label><input type="checkbox" id="cb-item-cheesecake" checked> Cheesecake</label>
+            <label><input type="checkbox" id="cb-item-icecream" checked> Ice Cream</label>
+        </div>
+        <button onclick="saveSettings()">Save Display Settings</button>
+        <div style="margin-top:24px; text-align:center;">
+            <a href="menu.html" target="_blank">View Menu Page</a>
+        </div>
+    </div>
+</body>
+</html>
