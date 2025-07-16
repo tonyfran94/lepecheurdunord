@@ -28,28 +28,109 @@
                 'item-cake', 'item-cheesecake', 'item-icecream'
             ];
             var settings = {};
+            var prices = {};
             items.forEach(function(id) {
                 settings[id] = document.getElementById('cb-' + id).checked;
+                prices[id] = document.getElementById('price-' + id).value;
+            });
+            // Handle dynamic items
+            var dynamicItems = JSON.parse(localStorage.getItem('dynamicMenuItems') || '[]');
+            dynamicItems.forEach(function(item) {
+                var cb = document.getElementById('cb-' + item.id);
+                var price = document.getElementById('price-' + item.id);
+                if (cb && price) {
+                    settings[item.id] = cb.checked;
+                    prices[item.id] = price.value;
+                }
             });
             localStorage.setItem('menuSettings', JSON.stringify(settings));
-            alert('Menu display settings saved!');
+            localStorage.setItem('menuPrices', JSON.stringify(prices));
+            alert('Menu display settings and prices saved!');
         }
+
+        function renderDynamicItems() {
+            var dynamicItems = JSON.parse(localStorage.getItem('dynamicMenuItems') || '[]');
+            var container = document.getElementById('dynamic-items');
+            container.innerHTML = '';
+            dynamicItems.forEach(function(item) {
+                var label = document.createElement('label');
+                label.innerHTML = `<input type="checkbox" id="cb-${item.id}" checked> ${item.name}
+                    <input type="number" id="price-${item.id}" min="0" value="${item.price}" style="width:80px; margin-left:10px;"> Rs
+                    <span style="font-size:0.9em; color:#888; margin-left:8px;">${item.category}</span>`;
+                label.style.display = 'block';
+                label.style.marginBottom = '8px';
+                container.appendChild(label);
+            });
+        }
+
+        document.getElementById('add-item-form').onsubmit = function(e) {
+            e.preventDefault();
+            var name = document.getElementById('new-item-name').value.trim();
+            var price = document.getElementById('new-item-price').value;
+            var category = document.getElementById('new-item-category').value;
+            if (!name || !price || !category) return;
+            var id = 'item-' + name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
+            var dynamicItems = JSON.parse(localStorage.getItem('dynamicMenuItems') || '[]');
+            // Prevent duplicate
+            if (dynamicItems.some(function(item) { return item.id === id; })) {
+                alert('Item already exists!');
+                return;
+            }
+            dynamicItems.push({ id, name, price, category });
+            localStorage.setItem('dynamicMenuItems', JSON.stringify(dynamicItems));
+            renderDynamicItems();
+            document.getElementById('add-item-form').reset();
+        };
+
+        window.onload = function() {
+            renderDynamicItems();
+        };
     </script>
 </head>
 <body>
     <div class="container">
         <h1>Menu Control Panel</h1>
         <div class="section">
-            <strong>Select which items to display:</strong>
-            <label><input type="checkbox" id="cb-item-bruschetta" checked> Bruschetta</label>
-            <label><input type="checkbox" id="cb-item-caesar" checked> Caesar Salad</label>
-            <label><input type="checkbox" id="cb-item-spring" checked> Spring Rolls</label>
-            <label><input type="checkbox" id="cb-item-salmon" checked> Grilled Salmon</label>
-            <label><input type="checkbox" id="cb-item-steak" checked> Steak Frites</label>
-            <label><input type="checkbox" id="cb-item-pasta" checked> Vegetarian Pasta</label>
-            <label><input type="checkbox" id="cb-item-cake" checked> Chocolate Cake</label>
-            <label><input type="checkbox" id="cb-item-cheesecake" checked> Cheesecake</label>
-            <label><input type="checkbox" id="cb-item-icecream" checked> Ice Cream</label>
+            <strong>Select which items to display and set prices:</strong>
+            <form id="add-item-form" style="margin-bottom:20px; background:#f0f0f0; padding:12px; border-radius:6px;">
+                <h3>Add New Menu Item</h3>
+                <input type="text" id="new-item-name" placeholder="Food Name" required style="width:40%; margin-right:8px;">
+                <input type="number" id="new-item-price" min="0" placeholder="Price" required style="width:20%; margin-right:8px;">
+                <select id="new-item-category" required style="width:30%; margin-right:8px;">
+                    <option value="Appetizers">Appetizers</option>
+                    <option value="Mains">Mains</option>
+                    <option value="Desserts">Desserts</option>
+                </select>
+                <button type="submit" style="margin-top:8px;">Add Item</button>
+            </form>
+            <div id="dynamic-items"></div>
+            <label><input type="checkbox" id="cb-item-bruschetta" checked> Bruschetta
+                <input type="number" id="price-item-bruschetta" min="0" value="220" style="width:80px; margin-left:10px;"> Rs
+            </label>
+            <label><input type="checkbox" id="cb-item-caesar" checked> Caesar Salad
+                <input type="number" id="price-item-caesar" min="0" value="250" style="width:80px; margin-left:10px;"> Rs
+            </label>
+            <label><input type="checkbox" id="cb-item-spring" checked> Spring Rolls
+                <input type="number" id="price-item-spring" min="0" value="180" style="width:80px; margin-left:10px;"> Rs
+            </label>
+            <label><input type="checkbox" id="cb-item-salmon" checked> Grilled Salmon
+                <input type="number" id="price-item-salmon" min="0" value="650" style="width:80px; margin-left:10px;"> Rs
+            </label>
+            <label><input type="checkbox" id="cb-item-steak" checked> Steak Frites
+                <input type="number" id="price-item-steak" min="0" value="800" style="width:80px; margin-left:10px;"> Rs
+            </label>
+            <label><input type="checkbox" id="cb-item-pasta" checked> Vegetarian Pasta
+                <input type="number" id="price-item-pasta" min="0" value="500" style="width:80px; margin-left:10px;"> Rs
+            </label>
+            <label><input type="checkbox" id="cb-item-cake" checked> Chocolate Cake
+                <input type="number" id="price-item-cake" min="0" value="250" style="width:80px; margin-left:10px;"> Rs
+            </label>
+            <label><input type="checkbox" id="cb-item-cheesecake" checked> Cheesecake
+                <input type="number" id="price-item-cheesecake" min="0" value="280" style="width:80px; margin-left:10px;"> Rs
+            </label>
+            <label><input type="checkbox" id="cb-item-icecream" checked> Ice Cream
+                <input type="number" id="price-item-icecream" min="0" value="150" style="width:80px; margin-left:10px;"> Rs
+            </label>
         </div>
         <button onclick="saveSettings()">Save Display Settings</button>
         <div style="margin-top:24px; text-align:center;">
